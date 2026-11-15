@@ -10,3 +10,9 @@ body,
   color: #e5e5e5;
   overflow: hidden;
 }
+
+/* xterm's viewport scrollbar defaults to a bright system scrollbar on Windows. */
+.xterm .xterm-viewport {
+  scrollbar-width: thin;
+  scrollbar-color: #404040 #0a0a0a;
+}
