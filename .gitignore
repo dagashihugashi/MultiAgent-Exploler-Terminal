@@ -12,3 +12,7 @@ Thumbs.db
 .DS_Store
 .vscode/*
 !.vscode/extensions.json
+
+# Generated mobile icon sets (not used by this desktop app)
+multi-agent-term/src-tauri/icons/android/
+multi-agent-term/src-tauri/icons/ios/

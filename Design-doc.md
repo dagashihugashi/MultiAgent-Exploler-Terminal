@@ -243,7 +243,7 @@ cmd.env("COLORTERM", "truecolor");
 
 | コマンド名 | 引数 | 戻り値 | 処理内容 |
 | :--- | :--- | :--- | :--- |
-| **`spawn_pty`** | `pane_id: u8`, `rows: u16`, `cols: u16`, `cwd: Option<String>`, `on_data: Channel<PtyEvent>` | `Result<(), String>` | 指定サイズのConPTYを生成し、`powershell.exe` を起動。別スレッドで `reader` を回し、標準出力を `PtyEvent::Data(Vec<u8>)` でフロントへ常時ストリーミングする。`reader` が EOF に達したら `PtyEvent::Exit` を送信してセッションを削除する（3.4.2 の自然終了検知）[cite: 1]。 |
+| **`spawn_pty`** | `pane_id: u8`, `rows: u16`, `cols: u16`, `cwd: Option<String>`, `on_data: Channel<PtyEvent>` | `Result<(), String>` | 指定サイズのConPTYを生成し、`powershell.exe` を起動。別スレッドで `reader` を回し、標準出力を `PtyEvent::Data(String)` でフロントへ常時ストリーミングする。UTF-8 のデコードは Rust 側で行い、読み取り境界で途切れた多バイト文字は次の読み取りまで持ち越す。子プロセスの終了を `child.wait()` で検知したらセッションを削除して `PtyEvent::Exit` を送信する（3.4.2 の自然終了検知）[cite: 1]。 |
 | **`write_pty`** | `pane_id: u8`, `data: String` | `Result<(), String>` | `xterm.onData` のキー入力、またはUIボタンからのコマンド文字列を対象ペインの `writer` に書き込み、`flush()` する[cite: 1]。 |
 | **`resize_pty`** | `pane_id: u8`, `rows: u16`, `cols: u16` | `Result<(), String>` | レイアウト変更時等に `fitAddon` が算出した新しい行数・列数を受け取り、`master.resize()` を実行して表示崩れを防ぐ[cite: 1]。`rows == 0 || cols == 0` はエラーとして拒否する（3.4.4）。 |
 | **`kill_pty`** | `pane_id: u8` | `Result<(), String>` | 対象ペインの `child.kill()` を実行してプロセスを強制終了し、`sessions` マップから削除する[cite: 1]。 |
@@ -256,7 +256,7 @@ cmd.env("COLORTERM", "truecolor");
 #[derive(Clone, serde::Serialize)]
 #[serde(tag = "type", content = "payload")]
 pub enum PtyEvent {
-    Data(Vec<u8>),
+    Data(String), // Rust 側でデコード済みの UTF-8 テキスト
     Exit,
 }
 ```
