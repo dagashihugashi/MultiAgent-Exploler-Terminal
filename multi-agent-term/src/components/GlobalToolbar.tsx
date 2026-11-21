@@ -1,4 +1,4 @@
-import { useState, type RefObject } from "react";
+import { useState, type ReactNode, type RefObject } from "react";
 import { LAYOUT_MODES, type LayoutMode } from "../layout";
 
 interface GlobalToolbarProps {
@@ -10,6 +10,8 @@ interface GlobalToolbarProps {
   onWorkspaceSubmit: (path: string) => void;
   workspaceInputRef: RefObject<HTMLInputElement>;
   onEmergencyStop: () => void;
+  /** Extra controls (hidden-pane indicator) rendered after the layout buttons. */
+  children?: ReactNode;
 }
 
 const BUTTON = "rounded px-2 py-0.5 text-xs hover:bg-neutral-700";
@@ -56,6 +58,8 @@ export function GlobalToolbar(props: GlobalToolbarProps) {
           </button>
         ))}
       </div>
+
+      {props.children}
 
       <span className="h-4 w-px bg-neutral-700" />
 

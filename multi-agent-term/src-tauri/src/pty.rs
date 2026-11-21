@@ -217,6 +217,16 @@ pub fn resize_pty(
         .map_err(|e| format!("resize of pane {pane_id} failed: {e}"))
 }
 
+/// Terminates every session; used when the main window is destroyed.
+pub fn kill_all_sessions(state: &AppState) {
+    let Ok(mut sessions) = state.sessions.lock() else {
+        return;
+    };
+    for (_, mut session) in sessions.drain() {
+        let _ = session.killer.kill();
+    }
+}
+
 #[tauri::command]
 pub fn kill_pty(state: State<'_, AppState>, pane_id: u8) -> Result<(), String> {
     let mut session = lock_sessions(&state)?

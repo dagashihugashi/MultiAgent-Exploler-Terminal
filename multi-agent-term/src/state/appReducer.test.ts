@@ -34,3 +34,26 @@ describe("appReducer", () => {
     expect(appReducer(initialAppState, { type: "setActive", paneId: 2 }).activePane).toBe(2);
   });
 });
+
+describe("appReducer hidden pane list", () => {
+  it("toggles and closes the hidden list", () => {
+    const open = appReducer(initialAppState, { type: "toggleHiddenList" });
+    expect(open.hiddenListOpen).toBe(true);
+    expect(appReducer(open, { type: "closeHiddenList" }).hiddenListOpen).toBe(false);
+    expect(appReducer(initialAppState, { type: "closeHiddenList" })).toBe(initialAppState);
+  });
+
+  it("showPane switches to a layout containing the pane, focuses it and closes the list", () => {
+    const open = appReducer(initialAppState, { type: "toggleHiddenList" });
+    const shown = appReducer(open, { type: "showPane", paneId: 3 });
+    expect(shown.layout).toBe("2x2");
+    expect(shown.activePane).toBe(3);
+    expect(shown.hiddenListOpen).toBe(false);
+  });
+
+  it("showPane keeps the layout when the pane is already visible", () => {
+    const shown = appReducer(initialAppState, { type: "showPane", paneId: 1 });
+    expect(shown.layout).toBe("2x1");
+    expect(shown.activePane).toBe(1);
+  });
+});

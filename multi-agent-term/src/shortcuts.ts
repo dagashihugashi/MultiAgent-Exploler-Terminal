@@ -34,6 +34,8 @@ const KEY_NAME_CODES: Record<string, string> = {
 
 const DIGIT_0_KEYCODE = 48;
 const DIGIT_9_KEYCODE = 57;
+const LETTER_A_KEYCODE = 65;
+const LETTER_Z_KEYCODE = 90;
 
 /** Physical key code, reconstructed from key/keyCode when the event has none. */
 export function normalizeCode(event: KeyLike): string {
@@ -44,6 +46,10 @@ export function normalizeCode(event: KeyLike): string {
   const keyCode = event.keyCode ?? 0;
   if (keyCode >= DIGIT_0_KEYCODE && keyCode <= DIGIT_9_KEYCODE) {
     return `Digit${keyCode - DIGIT_0_KEYCODE}`;
+  }
+  // With Ctrl held, key may be a control character, so fall back to keyCode.
+  if (keyCode >= LETTER_A_KEYCODE && keyCode <= LETTER_Z_KEYCODE) {
+    return `Key${String.fromCharCode(keyCode)}`;
   }
   return "";
 }

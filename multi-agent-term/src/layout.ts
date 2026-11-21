@@ -64,3 +64,12 @@ export function neighborOf(
   if (row < 0 || row >= spec.rows || col < 0 || col >= spec.columns) return null;
   return spec.panes[row * spec.columns + col] ?? null;
 }
+
+/** Layouts tried, in order, when a hidden pane must be brought on screen. */
+const REVEAL_ORDER: readonly LayoutMode[] = ["3x1", "2x2", "4x1"];
+
+/** The current layout if it already shows `paneId`, else the smallest one that does. */
+export function layoutShowing(paneId: PaneId, current: LayoutMode): LayoutMode {
+  if (isVisible(current, paneId)) return current;
+  return REVEAL_ORDER.find((mode) => isVisible(mode, paneId)) ?? current;
+}

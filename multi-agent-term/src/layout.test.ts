@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest";
-import { hiddenPanes, isVisible, neighborOf, positionOf, visiblePanes } from "./layout";
+import { hiddenPanes, isVisible, layoutShowing, neighborOf, positionOf, visiblePanes } from "./layout";
 
 describe("layout visibility", () => {
   it("shows panes 0 and 1 in 2x1 and hides 2 and 3", () => {
@@ -42,5 +42,18 @@ describe("neighborOf", () => {
 
   it("returns null for a pane hidden in the current layout", () => {
     expect(neighborOf("2x1", 2, "left")).toBeNull();
+  });
+});
+
+describe("layoutShowing", () => {
+  it("keeps the current layout when the pane is already visible", () => {
+    expect(layoutShowing(1, "2x1")).toBe("2x1");
+    expect(layoutShowing(3, "4x1")).toBe("4x1");
+  });
+
+  it("picks the smallest layout that reveals a hidden pane", () => {
+    expect(layoutShowing(2, "2x1")).toBe("3x1");
+    expect(layoutShowing(3, "2x1")).toBe("2x2");
+    expect(layoutShowing(3, "3x1")).toBe("2x2");
   });
 });

@@ -71,6 +71,13 @@ describe("normalizeCode fallback for events without a physical code", () => {
     });
   });
 
+  it("derives letters from keyCode when key is a control character", () => {
+    expect(normalizeCode(key("", { key: "", keyCode: 88 }))).toBe("KeyX");
+    expect(resolveShortcut(key("", { key: "", keyCode: 88, ctrlKey: true, shiftKey: true }))).toEqual({
+      type: "killPane",
+    });
+  });
+
   it("returns an empty code for anything else", () => {
     expect(normalizeCode(key("", { key: "ab" }))).toBe("");
     expect(resolveShortcut(key("", { key: "", altKey: true }))).toBeNull();
